@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checklist Lançamento Express — Método CCL</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0f;
+    color: #fff;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #f87171;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  h1 span {
+    background: linear-gradient(to right, #f87171, #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .progress-bar {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #ef4444, #f97316);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    white-space: nowrap;
+  }
+
+  .progress-count {
+    font-weight: 700;
+    color: #fb923c;
+  }
+
+  .section {
+    margin-bottom: 32px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(249,115,22,0.2));
+    border: 1px solid rgba(239,68,68,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .section-num {
+    margin-left: auto;
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    font-weight: 500;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .item:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+
+  .item.checked {
+    background: rgba(34,197,94,0.05);
+    border-color: rgba(34,197,94,0.15);
+  }
+
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+
+  .item.checked .checkbox {
+    background: #22c55e;
+    border-color: #22c55e;
+  }
+
+  .checkbox svg { display: none; }
+  .item.checked .checkbox svg { display: block; }
+
+  .item-content { flex: 1; }
+
+  .item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 3px;
+    transition: color 0.2s;
+  }
+
+  .item.checked .item-title {
+    color: rgba(255,255,255,0.4);
+    text-decoration: line-through;
+  }
+
+  .item-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+  }
+
+  .item-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-free { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+  .tag-paid { background: rgba(249,115,22,0.1); color: #fb923c; border: 1px solid rgba(249,115,22,0.2); }
+  .tag-ccl { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
+  .congrats {
+    display: none;
+    text-align: center;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(249,115,22,0.08));
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 20px;
+    margin-top: 32px;
+  }
+
+  .congrats.show { display: block; }
+
+  .congrats h2 { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+  .congrats p { color: rgba(255,255,255,0.5); font-size: 14px; }
+
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    color: rgba(255,255,255,0.2);
+    font-size: 12px;
+  }
+
+  .footer span {
+    background: linear-gradient(to right, #f87171, #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    .item { border-color: #ddd; background: #fafafa; }
+    .checkbox { border-color: #ccc; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="badge">⚡ Método CCL</div>
+    <h1>Checklist <span>Lançamento Express</span></h1>
+    <p class="subtitle">Do infoproduto criado à primeira venda. Siga cada etapa em ordem e não pule nenhuma.</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text"><span class="progress-count" id="progressCount">0</span> / <span id="progressTotal">0</span> concluídos</div>
+  </div>
+
+  <!-- ETAPA 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎯</div>
+      <div class="section-title">Etapa 1 — Produto Pronto</div>
+      <div class="section-num">3 itens</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Gerar ebook e página de vendas no Método CCL</div>
+        <div class="item-desc">Cole sua transcrição ou descrição e gere os dois de uma vez. Revise o título e o headline antes de avançar.</div>
+      </div>
+      <div class="item-tag tag-ccl">CCL</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Revisar e personalizar o conteúdo gerado</div>
+        <div class="item-desc">Ajuste nomes, exemplos pessoais e o tom de voz. Conteúdo com sua personalidade converte mais.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Baixar o HTML da página de vendas</div>
+        <div class="item-desc">Clique em "Baixar HTML" na tela de resultado. Guarde o arquivo — é seu ativo.</div>
+      </div>
+      <div class="item-tag tag-ccl">CCL</div>
+    </div>
+  </div>
+
+  <!-- ETAPA 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💰</div>
+      <div class="section-title">Etapa 2 — Checkout Configurado</div>
+      <div class="section-num">3 itens</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Criar produto no Kiwify, Hotmart ou GGCheckout</div>
+        <div class="item-desc">Defina o nome, preço e descrição. Suba o PDF do ebook como entrega digital.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Copiar o link de checkout e colar na página de vendas</div>
+        <div class="item-desc">Na tela de resultado do CCL, cole o link no campo "Link de Checkout" e salve. O botão de compra ativará automaticamente.</div>
+      </div>
+      <div class="item-tag tag-ccl">CCL</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Fazer uma compra teste para validar o fluxo</div>
+        <div class="item-desc">Compre seu próprio produto com cupom de 100% de desconto. Confirme que o ebook chega por email.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+  </div>
+
+  <!-- ETAPA 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📣</div>
+      <div class="section-title">Etapa 3 — Primeiros Compradores</div>
+      <div class="section-num">4 itens</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Postar no WhatsApp e grupos de nicho</div>
+        <div class="item-desc">Envie o link da página para seus contatos mais próximos do nicho. Peça feedback honesto antes de anunciar.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Criar 3 posts de conteúdo no Instagram</div>
+        <div class="item-desc">1 post sobre o problema que o ebook resolve, 1 sobre o resultado, 1 com trecho do conteúdo. Link na bio.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Conseguir os 3 primeiros depoimentos</div>
+        <div class="item-desc">Dê acesso gratuito para 3 pessoas do nicho em troca de feedback escrito. Coloque na página de vendas.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Configurar página de obrigado com upsell</div>
+        <div class="item-desc">Após a compra, mostre uma oferta complementar. Essa página sozinha pode aumentar o ticket médio em 30%.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+  </div>
+
+  <!-- ETAPA 4 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📈</div>
+      <div class="section-title">Etapa 4 — Escala com Tráfego</div>
+      <div class="section-num">4 itens</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Criar conta no Meta Business Manager</div>
+        <div class="item-desc">Configure o Pixel do Meta na sua página de vendas para rastrear visitantes e otimizar campanhas.</div>
+      </div>
+      <div class="item-tag tag-free">Grátis</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Rodar campanha de tráfego com R$20/dia</div>
+        <div class="item-desc">Comece pequeno. Objetivo: Conversões. Público: interesses do nicho, 25-45 anos, Brasil.</div>
+      </div>
+      <div class="item-tag tag-paid">Pago</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Testar 2 headlines diferentes na página</div>
+        <div class="item-desc">Gere uma variação no CCL com outro ângulo de copy. Rode as duas por 3 dias e fique com a que converter mais.</div>
+      </div>
+      <div class="item-tag tag-ccl">CCL</div>
+    </div>
+
+    <div class="item" onclick="toggle(this)">
+      <div class="checkbox"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="item-content">
+        <div class="item-title">Atingir as primeiras 10 vendas e reinvestir</div>
+        <div class="item-desc">Com 10 vendas você tem dados reais de conversão. Use o lucro para aumentar o orçamento de tráfego.</div>
+      </div>
+      <div class="item-tag tag-paid">Pago</div>
+    </div>
+  </div>
+
+  <div class="congrats" id="congrats">
+    <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+    <h2>Checklist <span style="background:linear-gradient(to right,#f87171,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Completo!</span></h2>
+    <p>Você seguiu todos os passos. Agora é hora de escalar. Boas vendas!</p>
+  </div>
+
+  <div class="footer">
+    Criado com <span>Método CCL</span> — Copie, Cole e Lucre
+  </div>
+
+</div>
+
+<script>
+  const items = document.querySelectorAll('.item');
+  document.getElementById('progressTotal').textContent = items.length;
+
+  function toggle(el) {
+    el.classList.toggle('checked');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const checked = document.querySelectorAll('.item.checked').length;
+    const total = items.length;
+    const pct = (checked / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = checked;
+    document.getElementById('congrats').classList.toggle('show', checked === total);
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
